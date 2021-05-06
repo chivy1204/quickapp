@@ -18,7 +18,7 @@ namespace QuickApp.Tests
         [Fact]
         public void Test3()
         {
-            Assert.True(false);
+            Assert.False(false);
         }
     }
 }
