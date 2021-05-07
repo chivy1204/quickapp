@@ -33,7 +33,7 @@ namespace QuickApp.Tests
         [Fact]
         public void Test6()
         {
-            Assert.True(true);
+            Assert.True(false);
         }
     }
 }
