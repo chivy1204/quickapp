@@ -20,5 +20,20 @@ namespace QuickApp.Tests
         {
             Assert.False(false);
         }
+        [Fact]
+        public void Test4()
+        {
+            Assert.True(true);
+        }
+        [Fact]
+        public void Test5()
+        {
+            Assert.True(true);
+        }
+        [Fact]
+        public void Test6()
+        {
+            Assert.False(false);
+        }
     }
 }
