@@ -2,14 +2,37 @@ pipeline {
     agent any
 
     stages {
-        stage('Hello') {
+        stage('Check dotnet') {
             steps {
-                echo 'Hello World'
+                sh 'dotnet --version'
             }
         }
-        stage('Goodbye') {
+        stage('Check npm') {
             steps {
-                echo 'Goodbye'
+                sh 'npm --version'
+            }
+        }
+        stage('Check npm') {
+            steps {
+                sh '''
+                npm --version
+                '''
+            }
+        }
+        stage('Build backend') {
+            steps {
+                sh '''
+                cd QuickApp
+                dotnet build
+                '''
+            }
+        }
+        stage('Build fronted') {
+            steps {
+                sh '''
+                cd QuickApp/ClientApp
+                ng build
+                '''
             }
         }
     }
