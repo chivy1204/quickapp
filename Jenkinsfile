@@ -12,13 +12,6 @@ pipeline {
                 sh 'npm --version'
             }
         }
-        stage('Check npm') {
-            steps {
-                sh '''
-                npm --version
-                '''
-            }
-        }
         stage('Build backend') {
             steps {
                 sh '''
