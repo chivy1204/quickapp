@@ -65,5 +65,22 @@ pipeline {
                 sh "rm allure-report.zip"
             }
         }
+        stage('Deploy report') {
+            agent {
+                node {
+                    label 'agent'
+                }
+            }
+            steps {
+                
+                sh '''
+                cd /var/www/html
+                sudo rm -r /var/www/html/*
+                sudo curl -O http://35.222.128.49:8081/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
+                sudo unzip allure-report-${BUILD_ID}.zip
+                sudo rm allure-report-${BUILD_ID}.zip
+                '''
+            }
+        }
     }
 }
