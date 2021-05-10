@@ -3,6 +3,11 @@ pipeline {
 
     stages {
         stage('Build backend') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps {
                 sh '''
                     cd QuickApp
@@ -11,6 +16,11 @@ pipeline {
             }
         }
         stage('Build fronted') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps {
                 sh '''
                 cd QuickApp/ClientApp
@@ -19,6 +29,11 @@ pipeline {
             }
         }
         stage('Test') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps {
                 warnError('Unstable Tests') {
                     sh "cd QuickApp.Tests && dotnet test --logger:trx"
@@ -27,6 +42,11 @@ pipeline {
             }
         }
         stage('Report') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps {
                 script {
                     allure([
@@ -40,13 +60,18 @@ pipeline {
             }
         }
         stage('Nexus upload') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps{
                 zip dir: "allure-report", exclude: '', glob: '', zipFile: "allure-report.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'allure-report', classifier: '', file: 'allure-report.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google', 
+                    ]], credentialsId: 'nexus-google-official', 
                     groupId: 'allure-report', 
-                    nexusUrl: '35.222.128.49:8081', 
+                    nexusUrl: '34.72.187.15:8081', 
                     nexusVersion: 'nexus3', 
                     protocol: 'http', 
                     repository: 'allure-official',
