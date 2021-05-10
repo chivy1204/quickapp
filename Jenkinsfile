@@ -28,15 +28,25 @@ pipeline {
                 '''
             }
         }
-        stage('Sonar scan'){
-            steps{
-                sh '''
-                    export DOTNET_ROOT="/root/.dotnet"
-                    cd QuickApp
-                    sudo dotnet sonarscanner begin /k:"backend-scan" /d:sonar.host.url="http://34.66.191.23"  /d:sonar.login="fba4a51f5db32f6eafd1fc582141b0651cba42ac"
-                    sudo dotnet build
-                    sudo dotnet sonarscanner end /d:sonar.login="fba4a51f5db32f6eafd1fc582141b0651cba42ac"
-                '''
+        stage('Test') {
+            steps {
+                warnError('Unstable Tests') {
+                    sh "cd QuickApp.Tests && dotnet test --logger:trx"
+                }
+
+            }
+        }
+        stage('Report') {
+            steps {
+                script {
+                    allure([
+                                includeProperties: false,
+                                jdk: '',
+                                properties: [],
+                                reportBuildPolicy: 'ALWAYS',
+                                results: [[path: 'QuickApp.Tests/TestResults']]
+                    ])
+                }
             }
         }
     }
