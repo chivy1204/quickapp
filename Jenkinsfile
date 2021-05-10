@@ -49,5 +49,21 @@ pipeline {
                 }
             }
         }
+        stage('Nexus upload') {
+            steps{
+                zip dir: "allure-report", exclude: '', glob: '', zipFile: "allure-report.zip"
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'allure-report', classifier: '', file: 'allure-report.zip', type: 'zip'
+                    ]], credentialsId: 'nexus-google', 
+                    groupId: 'allure-report', 
+                    nexusUrl: '35.222.128.49:8081', 
+                    nexusVersion: 'nexus3', 
+                    protocol: 'http', 
+                    repository: 'allure-official',
+                    version: '$BUILD_ID'
+                sh 'pwd'
+                sh "rm allure-report.zip"
+            }
+        }
     }
 }
