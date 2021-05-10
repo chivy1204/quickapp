@@ -1,4 +1,8 @@
 pipeline {
+    environment {
+        WORKSPACE = "${env.WORKSPACE}";
+        BUILD_ID = "${env.BUILD_ID}";
+    }
     agent any
 
     stages {
@@ -11,13 +15,13 @@ pipeline {
             steps {
                 sh '''
                     cd QuickApp
-                    dotnet publish -c Release
+                    dotnet publish -c Release -o webapi
                 '''
             }
         }
         stage('Upload webAPI artifact') {
             steps{
-                zip dir: "QuickApp/QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
+                zip dir: "webapi", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official', 
