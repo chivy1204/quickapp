@@ -2,21 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Check dotnet') {
-            steps {
-                sh 'dotnet --version'
-            }
-        }
-        stage('Check npm') {
-            steps {
-                sh 'npm --version'
-            }
-        }
         stage('Build backend') {
             steps {
                 sh '''
-                cd QuickApp
-                dotnet build
+                    cd QuickApp
+                    dotnet publish -c Release
                 '''
             }
         }
@@ -24,7 +14,7 @@ pipeline {
             steps {
                 sh '''
                 cd QuickApp/ClientApp
-                ng build
+                ng build --prod
                 '''
             }
         }
@@ -74,11 +64,11 @@ pipeline {
             steps {
                 
                 sh '''
-                cd /var/www/html
-                sudo rm -r /var/www/html/*
-                sudo curl -O http://35.222.128.49:8081/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
-                sudo unzip allure-report-${BUILD_ID}.zip
-                sudo rm allure-report-${BUILD_ID}.zip
+                    cd /var/www/html
+                    sudo rm -r /var/www/html/*
+                    sudo curl -O http://35.222.128.49:8081/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
+                    sudo unzip allure-report-${BUILD_ID}.zip
+                    sudo rm allure-report-${BUILD_ID}.zip
                 '''
             }
         }
