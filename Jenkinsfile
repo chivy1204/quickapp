@@ -20,6 +20,11 @@ pipeline {
             }
         }
         stage('Upload webAPI artifact') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps{
                 zip dir: "webapi", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
@@ -49,6 +54,11 @@ pipeline {
             }
         }
         stage('Upload Frontend artifact') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
             steps{
                 zip dir: "QuickApp/QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
