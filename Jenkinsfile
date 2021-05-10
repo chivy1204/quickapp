@@ -26,7 +26,7 @@ pipeline {
                 }
             }
             steps{
-                zip dir: "/var/lib/jenkins/workspace/QuickApp/QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
+                zip dir: "QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official', 
@@ -60,7 +60,7 @@ pipeline {
                 }
             }
             steps{
-                zip dir: "QuickApp/QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
+                zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official', 
