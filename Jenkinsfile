@@ -33,9 +33,9 @@ pipeline {
                 sh '''
                     export DOTNET_ROOT="/root/.dotnet"
                     cd QuickApp
-                    dotnet sonarscanner begin /k:"backend-scan" /d:sonar.host.url="http://34.66.191.23"  /d:sonar.login="fba4a51f5db32f6eafd1fc582141b0651cba42ac"
-                    dotnet build
-                    dotnet sonarscanner end /d:sonar.login="fba4a51f5db32f6eafd1fc582141b0651cba42ac"
+                    sudo dotnet sonarscanner begin /k:"backend-scan" /d:sonar.host.url="http://34.66.191.23"  /d:sonar.login="fba4a51f5db32f6eafd1fc582141b0651cba42ac"
+                    sudo dotnet build
+                    sudo dotnet sonarscanner end /d:sonar.login="fba4a51f5db32f6eafd1fc582141b0651cba42ac"
                 '''
             }
         }
