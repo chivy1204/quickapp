@@ -15,7 +15,7 @@ pipeline {
             steps {
                 sh '''
                     cd QuickApp
-                    dotnet publish -c Release -o webapi
+                    dotnet publish -c Release
                 '''
             }
         }
@@ -26,7 +26,7 @@ pipeline {
                 }
             }
             steps{
-                zip dir: "webapi", exclude: '', glob: '', zipFile: "webapi.zip"
+                zip dir: "/var/lib/jenkins/workspace/QuickApp/QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official', 
