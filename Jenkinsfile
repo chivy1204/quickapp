@@ -48,7 +48,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    cd backend
+                    cd /home/vync/backend
                     sudo rm -r /home/vync/backend/*
                     curl -O http://34.72.187.15:8081/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
                     sudo unzip webapi-${BUILD_ID}.zip
