@@ -89,7 +89,7 @@ pipeline {
                 sh "rm frontend.zip"
             }
         }
-        stage('Deploy report') {
+        stage('Deploy frontend') {
             agent {
                 node {
                     label 'frontend-quickapp-test'
