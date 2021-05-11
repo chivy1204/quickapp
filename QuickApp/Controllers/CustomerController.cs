@@ -53,7 +53,7 @@ namespace QuickApp.Controllers
 
 
 
-        [HttpGet("thudientu")]
+        [HttpGet("email")]
         public async Task<string> Email()
         {
             string recepientName = "QickApp Tester"; //         <===== Put the recepient's name here
