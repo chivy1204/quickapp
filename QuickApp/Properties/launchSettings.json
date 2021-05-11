@@ -15,6 +15,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "Test": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:30597;http://localhost:54030",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Test"
+      }
+    },
     "QuickApp": {
       "commandName": "Project",
       "launchBrowser": true,
