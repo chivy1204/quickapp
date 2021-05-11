@@ -12,6 +12,8 @@ pipeline {
         NORMAL = params.EnvironmentTarget.toLowerCase();
         WORKSPACE = "${env.WORKSPACE}";
         BUILD_ID = "${env.BUILD_ID}";
+
+        NEXUS_URL = "34.72.187.15:8081"
     }
     stages {
         stage('Build backend') {
@@ -84,7 +86,7 @@ pipeline {
                     artifactId: 'allure-report', classifier: '', file: 'allure-report.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official',
                     groupId: 'allure-report',
-                    nexusUrl: '34.72.187.15:8081',
+                    nexusUrl: "$NEXUS_URL",
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: 'allure-official',
@@ -110,7 +112,7 @@ pipeline {
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official',
                     groupId: 'webapi',
-                    nexusUrl: '34.72.187.15:8081',
+                    nexusUrl: "$NEXUS_URL",
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: 'allure-official',
@@ -135,7 +137,7 @@ pipeline {
                     artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official',
                     groupId: 'frontend',
-                    nexusUrl: '34.72.187.15:8081',
+                    nexusUrl: "$NEXUS_URL",
                     nexusVersion: 'nexus3',
                     protocol: 'http',
                     repository: 'allure-official',
@@ -164,7 +166,7 @@ pipeline {
                         sh '''
                             cd /var/www/html
                             sudo rm -r /var/www/html/*
-                            sudo curl -O http://34.72.187.15:8081/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
+                            sudo curl -O http://${NEXUS_URL}/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
                             sudo unzip allure-report-${BUILD_ID}.zip
                             sudo rm allure-report-${BUILD_ID}.zip
                         '''
@@ -180,7 +182,7 @@ pipeline {
                         sh '''
                             cd /home/vync/backend
                             sudo rm -r /home/vync/backend/*
-                            curl -O http://34.72.187.15:8081/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
+                            curl -O http://${NEXUS_URL}/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
                             sudo unzip webapi-${BUILD_ID}.zip
                         '''
                     }
@@ -195,7 +197,7 @@ pipeline {
                         sh '''
                             cd /var/www/html
                             sudo rm -r /var/www/html/*
-                            sudo curl -O http://34.72.187.15:8081/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip
+                            sudo curl -O http://${NEXUS_URL}/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip
                             sudo unzip frontend-${BUILD_ID}.zip
                             sudo rm frontend-${BUILD_ID}.zip
                         '''
