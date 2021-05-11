@@ -6,7 +6,7 @@ pipeline {
     }
     agent {
         node {
-            label "$BUILD_ID"
+            label "master"
         }
     }
     parameters { 
@@ -150,6 +150,7 @@ pipeline {
         stage('Parallel Deploy') {
             environment {
                 WEBPAPI = "webapi-quickapp-${params.EnvironmentTarget.toLowerCase()}"
+                FRONTEND = "frontend-quickapp-${params.EnvironmentTarget.toLowerCase()}"
             }
             parallel {
                 stage('Deploy report') {
@@ -171,7 +172,7 @@ pipeline {
                 stage('Deploy backend') {
                     agent {
                         node {
-                            label $WEBPAPI
+                            label "$WEBPAPI"
                         }
                     }
                     steps {
@@ -186,7 +187,7 @@ pipeline {
                 stage('Deploy frontend') {
                     agent {
                         node {
-                            label '''frontend-quickapp-${params.EnvironmentTarget.toLowerCase()}'''
+                            label "$FRONTEND"
                         }
                     }
                     steps {
