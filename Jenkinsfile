@@ -38,10 +38,7 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                cd QuickApp/ClientApp
-                ng build --configuration="${NORMAL}"
-                '''
+                sh "cd QuickApp/ClientApp && ng build --configuration=${NORMAL}"
             }
         }
         stage('Test') {
