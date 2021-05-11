@@ -10,7 +10,7 @@ pipeline {
         }
     }
     parameters { 
-        string(name: 'EnvironmentTarget', defaultValue: 'Test', description: 'Environment: Development, Test')
+        string(name: 'EnvironmentTarget', defaultValue: 'Development', description: 'Environment: Development, Test')
     }
     stages {
         stage('Build backend') {
@@ -23,7 +23,6 @@ pipeline {
                 sh '''
                     cd QuickApp
                     export ASPNETCORE_ENVIRONMENT=$EnvironmentTarget
-                    echo $ASPNETCORE_ENVIRONMENT
                     dotnet publish -c Release
                 '''
             }
