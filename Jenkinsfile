@@ -10,7 +10,7 @@ pipeline {
         }
     }
     parameters { 
-        string(name: 'EnvironmentTarget', defaultValue: 'Test', description: 'Environment: Development, Test')
+        string(name: 'EnvironmentTarget', defaultValue: 'Production', description: 'Environment: Development, Test, Production')
     }
     stages {
         stage('Build backend') {
@@ -148,6 +148,11 @@ pipeline {
             }
         }
         stage('Parallel Deploy') {
+            when {
+                expression {
+                    "$EnvironmentTarget" == "Test"
+                }
+            }
             parallel {
                 stage('Deploy report') {
                     agent {
