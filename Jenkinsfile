@@ -11,6 +11,11 @@ pipeline {
     }
 
     stages {
+        stage('Send slack') {
+            steps {
+                slackSend botUser: true, channel: 'U021GTUANLT', message: 'Test message', teamDomain: 'https://devops-aow1052.slack.com', tokenCredentialId: 'slack-token'
+            }
+        }
         stage('Build backend') {
             agent {
                 node {
@@ -179,11 +184,6 @@ pipeline {
                         '''
                     }
                 }
-            }
-        }
-        stage('Send slack') {
-            steps {
-                slackSend botUser: true, channel: '#test-jenkins', message: 'Test message', teamDomain: 'https://devops-aow1052.slack.com', tokenCredentialId: 'slack-token'
             }
         }
     }
