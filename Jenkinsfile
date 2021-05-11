@@ -10,7 +10,7 @@ pipeline {
         }
     }
     parameters { 
-        string(name: 'EnvironmentTarget', defaultValue: 'Development', description: 'Environment: Development, Test')
+        string(name: 'EnvironmentTarget', defaultValue: 'Test', description: 'Environment: Development, Test')
     }
     stages {
         stage('Build backend') {
