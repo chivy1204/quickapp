@@ -40,7 +40,7 @@ pipeline {
             steps {
                 sh '''
                 cd QuickApp/ClientApp
-                ng build --prod
+                ng build --configuration=$NORMAL
                 '''
             }
         }
