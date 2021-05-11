@@ -6,7 +6,7 @@ pipeline {
     }
     agent {
         node {
-            label "master"
+            label $BUILD_ID
         }
     }
     parameters { 
