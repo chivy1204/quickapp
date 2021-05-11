@@ -171,7 +171,7 @@ pipeline {
                 stage('Deploy backend') {
                     agent {
                         node {
-                            label 'webapi-quickapp-${TARGET_ENVIRONMENT}'
+                            label '''webapi-quickapp-${params.EnvironmentTarget.toLowerCase()}'''
                         }
                     }
                     steps {
@@ -186,7 +186,7 @@ pipeline {
                 stage('Deploy frontend') {
                     agent {
                         node {
-                            label 'frontend-quickapp-${TARGET_ENVIRONMENT}'
+                            label '''frontend-quickapp-${params.EnvironmentTarget.toLowerCase()}'''
                         }
                     }
                     steps {
