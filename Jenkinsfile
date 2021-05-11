@@ -14,6 +14,8 @@ pipeline {
         BUILD_ID = "${env.BUILD_ID}";
 
         NEXUS_URL = "34.72.187.15:8081"
+        CHANNEL_SLACK = "U021GTUANLT"
+        TEAM_DOMAIN = "https://devops-aow1052.slack.com"
     }
     stages {
         stage('Build backend') {
@@ -203,12 +205,27 @@ pipeline {
         }
     }
     post {
-        always {
+        success {
             slackSend botUser: true,
-                channel: 'U021GTUANLT',
-                message: 'Deploy completed: Check report test at http://allurereportquickapp.eastus.cloudapp.azure.com and view frontend at https://frontendquickapptest.eastus.cloudapp.azure.com',
-                teamDomain: 'https://devops-aow1052.slack.com',
+                channel: "$CHANNEL_SLACK",
+                message: "CICD thành công trên môi trường $NORMAL ở version $BUILD_ID",
+                teamDomain: "$TEAM_DOMAIN",
                 tokenCredentialId: 'slack-token'
         }
+        failure {
+            slackSend botUser: true,
+                channel: "$CHANNEL_SLACK",
+                message: "CICD thất bại trên môi trường $NORMAL ở version $BUILD_ID",
+                teamDomain: "$TEAM_DOMAIN",
+                tokenCredentialId: 'slack-token'
+        }
+        aborted {
+            slackSend botUser: true,
+                channel: "$CHANNEL_SLACK",
+                message: "CICD bị dừng đột ngột trên môi trường $NORMAL ở version $BUILD_ID",
+                teamDomain: "$TEAM_DOMAIN",
+                tokenCredentialId: 'slack-token'
+        }
+        
     }
 }
