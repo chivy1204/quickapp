@@ -211,7 +211,7 @@ pipeline {
             }
             agent {
                 node {
-                    label "quickapp-production"
+                    label "webapi-quickapp-production"
                 }
             }
             steps {
@@ -220,13 +220,6 @@ pipeline {
                     sudo rm -r /home/vync/backend/*
                     curl -O http://34.72.187.15:8081/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
                     sudo unzip webapi-${BUILD_ID}.zip
-                '''
-                sh '''
-                    cd /var/www/html
-                    sudo rm -r /var/www/html/*
-                    sudo curl -O http://34.72.187.15:8081/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip
-                    sudo unzip frontend-${BUILD_ID}.zip
-                    sudo rm frontend-${BUILD_ID}.zip
                 '''
             }
 
