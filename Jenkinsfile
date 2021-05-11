@@ -11,11 +11,6 @@ pipeline {
     }
 
     stages {
-        stage('Send slack') {
-            steps {
-                slackSend botUser: true, channel: 'U021GTUANLT', message: 'Test message', teamDomain: 'https://devops-aow1052.slack.com', tokenCredentialId: 'slack-token'
-            }
-        }
         stage('Build backend') {
             agent {
                 node {
@@ -184,6 +179,15 @@ pipeline {
                         '''
                     }
                 }
+            }
+        }
+        stage('Send slack') {
+            steps {
+                slackSend botUser: true,
+                channel: 'U021GTUANLT',
+                message: 'Deploy completed: Check report test at http://allurereportquickapp.eastus.cloudapp.azure.com and view frontend at https://frontendquickapptest.eastus.cloudapp.azure.com',
+                teamDomain: 'https://devops-aow1052.slack.com',
+                tokenCredentialId: 'slack-token'
             }
         }
     }
