@@ -149,7 +149,7 @@ pipeline {
         }
         stage('Parallel Deploy') {
             environment {
-                TARGET_ENVIRONMENT = params.EnvironmentTarget.toLowerCase()
+                WEBPAPI = "webapi-quickapp-${params.EnvironmentTarget.toLowerCase()}"
             }
             parallel {
                 stage('Deploy report') {
@@ -171,7 +171,7 @@ pipeline {
                 stage('Deploy backend') {
                     agent {
                         node {
-                            label '''webapi-quickapp-${params.EnvironmentTarget.toLowerCase()}'''
+                            label $WEBPAPI
                         }
                     }
                     steps {
