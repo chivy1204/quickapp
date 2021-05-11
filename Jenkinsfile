@@ -45,7 +45,6 @@ pipeline {
             }
             steps {
                 warnError('Unstable Tests') {
-                    sh "cd QuickApp.Tests && sudo rm -r TestResults"
                     sh "cd QuickApp.Tests && dotnet test --logger:trx"
                 }
             }
@@ -85,8 +84,13 @@ pipeline {
                     protocol: 'http',
                     repository: 'allure-official',
                     version: '$BUILD_ID'
-                sh 'pwd'
-                sh "rm allure-report.zip && sudo rm -r allure-report"
+                sh '''
+                    pwd
+                    rm allure-report.zip
+                    rm -r allure-report
+                    cd QuickApp.Tests
+                    rm -r TestResults
+                '''
             }
         }
         stage('Upload webAPI artifact') {
