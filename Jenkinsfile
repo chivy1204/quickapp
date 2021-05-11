@@ -118,7 +118,7 @@ pipeline {
                     pwd
                     rm webapi.zip
                     cd QuickApp/bin/
-                    rm -r Release
+                    rm -r $EnvironmentTarget
                 '''
             }
         }
