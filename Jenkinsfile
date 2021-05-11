@@ -9,7 +9,9 @@ pipeline {
             label "master"
         }
     }
-
+    parameters { 
+        choice(name: 'EnvironmentTarget', choices: ['Development', 'Test'], description: '') 
+    }
     stages {
         stage('Build backend') {
             agent {
@@ -20,6 +22,8 @@ pipeline {
             steps {
                 sh '''
                     cd QuickApp
+                    export ASPNETCORE_ENVIRONMENT=$EnvironmentTarget
+                    echo $ASPNETCORE_ENVIRONMENT
                     dotnet publish -c Release
                 '''
             }
