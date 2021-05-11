@@ -148,10 +148,8 @@ pipeline {
             }
         }
         stage('Parallel Deploy') {
-            when {
-                expression {
-                    "$EnvironmentTarget" == "Test"
-                }
+            environment {
+                TARGET_ENVIRONMENT = params.EnvironmentTarget.toLowerCase()
             }
             parallel {
                 stage('Deploy report') {
@@ -173,7 +171,7 @@ pipeline {
                 stage('Deploy backend') {
                     agent {
                         node {
-                            label 'webapi-quickapp-test'
+                            label 'webapi-quickapp-${TARGET_ENVIRONMENT}'
                         }
                     }
                     steps {
@@ -188,7 +186,7 @@ pipeline {
                 stage('Deploy frontend') {
                     agent {
                         node {
-                            label 'frontend-quickapp-test'
+                            label 'frontend-quickapp-${TARGET_ENVIRONMENT}'
                         }
                     }
                     steps {
@@ -202,27 +200,6 @@ pipeline {
                     }
                 }
             }
-        }
-        stage('Deploy QuickApp Production') {
-            when {
-                expression {
-                    "$EnvironmentTarget" == "Production"
-                }
-            }
-            agent {
-                node {
-                    label "webapi-quickapp-production"
-                }
-            }
-            steps {
-                sh '''
-                    cd /home/vync/backend
-                    sudo rm -r /home/vync/backend/*
-                    curl -O http://34.72.187.15:8081/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
-                    sudo unzip webapi-${BUILD_ID}.zip
-                '''
-            }
-
         }
         stage('Send slack') {
             steps {
