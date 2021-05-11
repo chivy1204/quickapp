@@ -110,8 +110,12 @@ pipeline {
                     protocol: 'http',
                     repository: 'allure-official',
                     version: '$BUILD_ID'
-                sh 'pwd'
-                sh "rm webapi.zip"
+                sh '''
+                    pwd
+                    rm webapi.zip
+                    cd QuickApp/bin/
+                    rm -r Release
+                '''
             }
         }
         stage('Upload Frontend artifact') {
@@ -131,8 +135,12 @@ pipeline {
                     protocol: 'http',
                     repository: 'allure-official',
                     version: '$BUILD_ID'
-                sh 'pwd'
-                sh "rm frontend.zip"
+                sh '''
+                    pwd
+                    rm frontend.zip
+                    cd QuickApp/ClientApp
+                    rm -r dist
+                '''
             }
         }
         stage('Parallel Deploy') {
