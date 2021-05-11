@@ -1,9 +1,14 @@
+/* groovylint-disable CompileStatic, DuplicateStringLiteral, FileEndsWithoutNewline, GStringExpressionWithinString, LineLength, UnnecessaryGString */
 pipeline {
     environment {
         WORKSPACE = "${env.WORKSPACE}";
         BUILD_ID = "${env.BUILD_ID}";
     }
-    agent any
+    agent {
+        node {
+            label "master"
+        }
+    }
 
     stages {
         stage('Build backend') {
@@ -25,15 +30,15 @@ pipeline {
                     label "master"
                 }
             }
-            steps{
+            steps {
                 zip dir: "QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google-official', 
-                    groupId: 'webapi', 
-                    nexusUrl: '34.72.187.15:8081', 
-                    nexusVersion: 'nexus3', 
-                    protocol: 'http', 
+                    ]], credentialsId: 'nexus-google-official',
+                    groupId: 'webapi',
+                    nexusUrl: '34.72.187.15:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
                     repository: 'allure-official',
                     version: '$BUILD_ID'
                 sh 'pwd'
@@ -74,15 +79,15 @@ pipeline {
                     label "master"
                 }
             }
-            steps{
+            steps {
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google-official', 
-                    groupId: 'frontend', 
-                    nexusUrl: '34.72.187.15:8081', 
-                    nexusVersion: 'nexus3', 
-                    protocol: 'http', 
+                    ]], credentialsId: 'nexus-google-official',
+                    groupId: 'frontend',
+                    nexusUrl: '34.72.187.15:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
                     repository: 'allure-official',
                     version: '$BUILD_ID'
                 sh 'pwd'
@@ -96,7 +101,6 @@ pipeline {
                 }
             }
             steps {
-                
                 sh '''
                     cd /var/www/html
                     sudo rm -r /var/www/html/*
@@ -116,7 +120,6 @@ pipeline {
                 warnError('Unstable Tests') {
                     sh "cd QuickApp.Tests && dotnet test --logger:trx"
                 }
-
             }
         }
         stage('Report') {
@@ -143,15 +146,15 @@ pipeline {
                     label "master"
                 }
             }
-            steps{
+            steps {
                 zip dir: "allure-report", exclude: '', glob: '', zipFile: "allure-report.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'allure-report', classifier: '', file: 'allure-report.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google-official', 
-                    groupId: 'allure-report', 
-                    nexusUrl: '34.72.187.15:8081', 
-                    nexusVersion: 'nexus3', 
-                    protocol: 'http', 
+                    ]], credentialsId: 'nexus-google-official',
+                    groupId: 'allure-report',
+                    nexusUrl: '34.72.187.15:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
                     repository: 'allure-official',
                     version: '$BUILD_ID'
                 sh 'pwd'
@@ -165,7 +168,6 @@ pipeline {
                 }
             }
             steps {
-                
                 sh '''
                     cd /var/www/html
                     sudo rm -r /var/www/html/*
