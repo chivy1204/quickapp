@@ -203,6 +203,28 @@ pipeline {
                 }
             }
         }
+        stage('Deploy QuickApp Production') {
+            when {
+                expression {
+                    "$EnvironmentTarget" == "Production"
+                }
+            }
+            agent {
+                node {
+                    label "quickapp-production"
+                }
+            }
+            steps {
+                sh '''
+                    cd /var/www/html
+                    sudo rm -r /var/www/html/*
+                    sudo curl -O http://34.72.187.15:8081/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip
+                    sudo unzip frontend-${BUILD_ID}.zip
+                    sudo rm frontend-${BUILD_ID}.zip
+                '''
+            }
+
+        }
         stage('Send slack') {
             steps {
                 slackSend botUser: true,
