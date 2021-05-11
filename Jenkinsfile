@@ -226,6 +226,13 @@ pipeline {
                 teamDomain: "$TEAM_DOMAIN",
                 tokenCredentialId: 'slack-token'
         }
+        unstable {
+            slackSend botUser: true,
+                channel: "$CHANNEL_SLACK",
+                message: "Ứng dụng trên môi trường $NORMAL ở version $BUILD_ID không ổn định. Kiểm tra thông tin test report tại http://allurereportquickapp.eastus.cloudapp.azure.com",
+                teamDomain: "$TEAM_DOMAIN",
+                tokenCredentialId: 'slack-token'
+        }
         
     }
 }
