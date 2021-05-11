@@ -53,23 +53,8 @@ namespace QuickApp.Controllers
 
 
 
-        [HttpGet("email")]
+        [HttpGet("thudientu")]
         public async Task<string> Email()
-        {
-            string recepientName = "QickApp Tester"; //         <===== Put the recepient's name here
-            string recepientEmail = "test@ebenmonney.com"; //   <===== Put the recepient's email here
-
-            string message = EmailTemplates.GetTestEmail(recepientName, DateTime.UtcNow);
-
-            (bool success, string errorMsg) = await _emailSender.SendEmailAsync(recepientName, recepientEmail, "Test Email from QuickApp", message);
-
-            if (success)
-                return "Success";
-
-            return "Error: " + errorMsg;
-        }
-        [HttpGet("phone")]
-        public async Task<string> Phone()
         {
             string recepientName = "QickApp Tester"; //         <===== Put the recepient's name here
             string recepientEmail = "test@ebenmonney.com"; //   <===== Put the recepient's email here
