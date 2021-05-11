@@ -6,7 +6,7 @@ pipeline {
         }
     }
     parameters { 
-        string(name: 'EnvironmentTarget', defaultValue: 'Production', description: 'Environment: Development, Test, Production')
+        string(name: 'EnvironmentTarget', defaultValue: 'Production', description: 'Environment: Test, Production')
     }
     environment {
         NORMAL = params.EnvironmentTarget.toLowerCase();
@@ -26,7 +26,6 @@ pipeline {
                 sh '''
                     cd QuickApp
                     export ASPNETCORE_ENVIRONMENT=$EnvironmentTarget
-                    echo $ASPNETCORE_ENVIRONMENT
                     dotnet publish -c $EnvironmentTarget
                 '''
             }
@@ -202,14 +201,14 @@ pipeline {
                 }
             }
         }
-        stage('Send slack') {
-            steps {
-                slackSend botUser: true,
+    }
+    post {
+        always {
+            slackSend botUser: true,
                 channel: 'U021GTUANLT',
                 message: 'Deploy completed: Check report test at http://allurereportquickapp.eastus.cloudapp.azure.com and view frontend at https://frontendquickapptest.eastus.cloudapp.azure.com',
                 teamDomain: 'https://devops-aow1052.slack.com',
                 tokenCredentialId: 'slack-token'
-            }
         }
     }
 }
