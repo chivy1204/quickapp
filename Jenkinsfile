@@ -10,7 +10,7 @@ pipeline {
         }
     }
     parameters { 
-        string(name: 'EnvironmentTarget', defaultValue: 'Development', description: 'Environment: Development, Test')
+        string(name: 'EnvironmentTarget', defaultValue: 'Test', description: 'Environment: Development, Test')
     }
     stages {
         stage('Build backend') {
@@ -23,7 +23,8 @@ pipeline {
                 sh '''
                     cd QuickApp
                     export ASPNETCORE_ENVIRONMENT=$EnvironmentTarget
-                    dotnet publish -c Release
+                    echo $ASPNETCORE_ENVIRONMENT
+                    dotnet publish -c $EnvironmentTarget
                 '''
             }
         }
@@ -103,7 +104,7 @@ pipeline {
                 }
             }
             steps {
-                zip dir: "QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
+                zip dir: "QuickApp/bin/$EnvironmentTarget/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
                     ]], credentialsId: 'nexus-google-official',
