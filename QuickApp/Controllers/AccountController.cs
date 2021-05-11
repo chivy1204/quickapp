@@ -49,7 +49,12 @@ namespace QuickApp.Controllers
         {
             return await GetUserById(Utilities.GetUserId(this.User));
         }
-
+        [HttpGet("users/vync")]
+        [ProducesResponseType(200, Type = typeof(UserViewModel))]
+        public String GetVyNC()
+        {
+            return "Hi moi nguoi min la VyNC";
+        }
 
         [HttpGet("users/{id}", Name = GetUserByIdActionName)]
         [ProducesResponseType(200, Type = typeof(UserViewModel))]
