@@ -24,42 +24,6 @@ pipeline {
                 '''
             }
         }
-        stage('Upload webAPI artifact') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
-            steps {
-                zip dir: "QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
-                nexusArtifactUploader artifacts: [[
-                    artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google-official',
-                    groupId: 'webapi',
-                    nexusUrl: '34.72.187.15:8081',
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    repository: 'allure-official',
-                    version: '$BUILD_ID'
-                sh 'pwd'
-                sh "rm webapi.zip"
-            }
-        }
-        stage('Deploy backend') {
-            agent {
-                node {
-                    label 'webapi-quickapp-test'
-                }
-            }
-            steps {
-                sh '''
-                    cd /home/vync/backend
-                    sudo rm -r /home/vync/backend/*
-                    curl -O http://34.72.187.15:8081/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
-                    sudo unzip webapi-${BUILD_ID}.zip
-                '''
-            }
-        }
         stage('Build frontend') {
             agent {
                 node {
@@ -70,43 +34,6 @@ pipeline {
                 sh '''
                 cd QuickApp/ClientApp
                 ng build --prod
-                '''
-            }
-        }
-        stage('Upload Frontend artifact') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
-            steps {
-                zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
-                nexusArtifactUploader artifacts: [[
-                    artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google-official',
-                    groupId: 'frontend',
-                    nexusUrl: '34.72.187.15:8081',
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    repository: 'allure-official',
-                    version: '$BUILD_ID'
-                sh 'pwd'
-                sh "rm frontend.zip"
-            }
-        }
-        stage('Deploy frontend') {
-            agent {
-                node {
-                    label 'frontend-quickapp-test'
-                }
-            }
-            steps {
-                sh '''
-                    cd /var/www/html
-                    sudo rm -r /var/www/html/*
-                    sudo curl -O http://34.72.187.15:8081/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip
-                    sudo unzip frontend-${BUILD_ID}.zip
-                    sudo rm frontend-${BUILD_ID}.zip
                 '''
             }
         }
@@ -140,7 +67,7 @@ pipeline {
                 }
             }
         }
-        stage('Nexus upload') {
+        stage('Nexus upload report') {
             agent {
                 node {
                     label "master"
@@ -161,20 +88,97 @@ pipeline {
                 sh "rm allure-report.zip"
             }
         }
-        stage('Deploy report') {
+        stage('Upload webAPI artifact') {
             agent {
                 node {
-                    label 'agent'
+                    label "master"
                 }
             }
             steps {
-                sh '''
-                    cd /var/www/html
-                    sudo rm -r /var/www/html/*
-                    sudo curl -O http://34.72.187.15:8081/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
-                    sudo unzip allure-report-${BUILD_ID}.zip
-                    sudo rm allure-report-${BUILD_ID}.zip
-                '''
+                zip dir: "QuickApp/bin/Release/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
+                    ]], credentialsId: 'nexus-google-official',
+                    groupId: 'webapi',
+                    nexusUrl: '34.72.187.15:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'allure-official',
+                    version: '$BUILD_ID'
+                sh 'pwd'
+                sh "rm webapi.zip"
+            }
+        }
+        stage('Upload Frontend artifact') {
+            agent {
+                node {
+                    label "master"
+                }
+            }
+            steps {
+                zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
+                    ]], credentialsId: 'nexus-google-official',
+                    groupId: 'frontend',
+                    nexusUrl: '34.72.187.15:8081',
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'allure-official',
+                    version: '$BUILD_ID'
+                sh 'pwd'
+                sh "rm frontend.zip"
+            }
+        }
+        stage('Parallel Deploy') {
+            parallel {
+                stage('Deploy report') {
+                    agent {
+                        node {
+                            label 'agent'
+                        }
+                    }
+                    steps {
+                        sh '''
+                            cd /var/www/html
+                            sudo rm -r /var/www/html/*
+                            sudo curl -O http://34.72.187.15:8081/repository/allure-official/allure-report/allure-report/${BUILD_ID}/allure-report-${BUILD_ID}.zip
+                            sudo unzip allure-report-${BUILD_ID}.zip
+                            sudo rm allure-report-${BUILD_ID}.zip
+                        '''
+                    }
+                }
+                stage('Deploy backend') {
+                    agent {
+                        node {
+                            label 'webapi-quickapp-test'
+                        }
+                    }
+                    steps {
+                        sh '''
+                            cd /home/vync/backend
+                            sudo rm -r /home/vync/backend/*
+                            curl -O http://34.72.187.15:8081/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
+                            sudo unzip webapi-${BUILD_ID}.zip
+                        '''
+                    }
+                }
+                stage('Deploy frontend') {
+                    agent {
+                        node {
+                            label 'frontend-quickapp-test'
+                        }
+                    }
+                    steps {
+                        sh '''
+                            cd /var/www/html
+                            sudo rm -r /var/www/html/*
+                            sudo curl -O http://34.72.187.15:8081/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip
+                            sudo unzip frontend-${BUILD_ID}.zip
+                            sudo rm frontend-${BUILD_ID}.zip
+                        '''
+                    }
+                }
             }
         }
     }
