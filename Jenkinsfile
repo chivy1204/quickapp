@@ -1,9 +1,5 @@
 /* groovylint-disable CompileStatic, DuplicateStringLiteral, FileEndsWithoutNewline, GStringExpressionWithinString, LineLength, UnnecessaryGString */
 pipeline {
-    environment {
-        WORKSPACE = "${env.WORKSPACE}";
-        BUILD_ID = "${env.BUILD_ID}";
-    }
     agent {
         node {
             label "master"
@@ -11,6 +7,11 @@ pipeline {
     }
     parameters { 
         string(name: 'EnvironmentTarget', defaultValue: 'Production', description: 'Environment: Development, Test, Production')
+    }
+    environment {
+        NORMAL = params.EnvironmentTarget.toLowerCase();
+        WORKSPACE = "${env.WORKSPACE}";
+        BUILD_ID = "${env.BUILD_ID}";
     }
     stages {
         stage('Build backend') {
@@ -149,8 +150,8 @@ pipeline {
         }
         stage('Parallel Deploy') {
             environment {
-                WEBPAPI = "webapi-quickapp-${params.EnvironmentTarget.toLowerCase()}"
-                FRONTEND = "frontend-quickapp-${params.EnvironmentTarget.toLowerCase()}"
+                WEBPAPI = "webapi-quickapp-${NORMAL}"
+                FRONTEND = "frontend-quickapp-${NORMAL}"
             }
             parallel {
                 stage('Deploy report') {
