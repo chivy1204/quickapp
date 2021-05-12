@@ -19,11 +19,6 @@ pipeline {
     }
     stages {
         stage('Build backend') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 sh '''
                     cd QuickApp
@@ -33,21 +28,11 @@ pipeline {
             }
         }
         stage('Build frontend') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 sh "cd QuickApp/ClientApp && ng build --configuration=${NORMAL}"
             }
         }
         stage('Test') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 warnError('Unstable Tests') {
                     sh "cd QuickApp.Tests && dotnet test --logger:trx"
@@ -55,11 +40,6 @@ pipeline {
             }
         }
         stage('Report') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 script {
                     allure([
@@ -73,11 +53,6 @@ pipeline {
             }
         }
         stage('Nexus upload report') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 zip dir: "allure-report", exclude: '', glob: '', zipFile: "allure-report.zip"
                 nexusArtifactUploader artifacts: [[
@@ -99,11 +74,6 @@ pipeline {
             }
         }
         stage('Upload webAPI artifact') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 zip dir: "QuickApp/bin/$EnvironmentTarget/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
@@ -124,11 +94,6 @@ pipeline {
             }
         }
         stage('Upload Frontend artifact') {
-            agent {
-                node {
-                    label "master"
-                }
-            }
             steps {
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
