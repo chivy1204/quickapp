@@ -26,56 +26,6 @@ pipeline {
                     export ASPNETCORE_ENVIRONMENT=$ENVIRONMEN_TARGET
                     dotnet publish -c $ENVIRONMEN_TARGET
                 '''
-            }
-        }
-        stage('Build frontend') {
-            steps {
-                sh "cd QuickApp/ClientApp && ng build --configuration=${NORMAL}"
-            }
-        }
-        stage('Test') {
-            steps {
-                warnError('Unstable Tests') {
-                    sh "cd QuickApp.Tests && dotnet test --logger:trx"
-                }
-            }
-        }
-        stage('Report') {
-            steps {
-                script {
-                    allure([
-                                includeProperties: false,
-                                jdk: '',
-                                properties: [],
-                                reportBuildPolicy: 'ALWAYS',
-                                results: [[path: 'QuickApp.Tests/TestResults']]
-                    ])
-                }
-            }
-        }
-        stage('Nexus upload report') {
-            steps {
-                zip dir: "allure-report", exclude: '', glob: '', zipFile: "allure-report.zip"
-                nexusArtifactUploader artifacts: [[
-                    artifactId: 'allure-report', classifier: '', file: 'allure-report.zip', type: 'zip'
-                    ]], credentialsId: 'nexus-google-official',
-                    groupId: 'allure-report',
-                    nexusUrl: "$NEXUS_URL",
-                    nexusVersion: 'nexus3',
-                    protocol: 'http',
-                    repository: 'allure-official',
-                    version: '$BUILD_ID'
-                sh '''
-                    pwd
-                    rm allure-report.zip
-                    rm -r allure-report
-                    cd QuickApp.Tests
-                    rm -r TestResults
-                '''
-            }
-        }
-        stage('Upload webAPI artifact') {
-            steps {
                 zip dir: "QuickApp/bin/$ENVIRONMEN_TARGET/net5.0", exclude: '', glob: '', zipFile: "webapi.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'webapi', classifier: '', file: 'webapi.zip', type: 'zip'
@@ -94,8 +44,9 @@ pipeline {
                 '''
             }
         }
-        stage('Upload Frontend artifact') {
+        stage('Build frontend') {
             steps {
+                sh "cd QuickApp/ClientApp && ng build --configuration=${NORMAL}"
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
@@ -111,6 +62,39 @@ pipeline {
                     rm frontend.zip
                     cd QuickApp/ClientApp
                     rm -r dist
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                warnError('Unstable Tests') {
+                    sh "cd QuickApp.Tests && dotnet test --logger:trx"
+                }
+                script {
+                    allure([
+                                includeProperties: false,
+                                jdk: '',
+                                properties: [],
+                                reportBuildPolicy: 'ALWAYS',
+                                results: [[path: 'QuickApp.Tests/TestResults']]
+                    ])
+                }
+                zip dir: "allure-report", exclude: '', glob: '', zipFile: "allure-report.zip"
+                nexusArtifactUploader artifacts: [[
+                    artifactId: 'allure-report', classifier: '', file: 'allure-report.zip', type: 'zip'
+                    ]], credentialsId: 'nexus-google-official',
+                    groupId: 'allure-report',
+                    nexusUrl: "$NEXUS_URL",
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    repository: 'allure-official',
+                    version: '$BUILD_ID'
+                sh '''
+                    pwd
+                    rm allure-report.zip
+                    rm -r allure-report
+                    cd QuickApp.Tests
+                    rm -r TestResults
                 '''
             }
         }
