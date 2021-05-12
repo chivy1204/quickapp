@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
         NORMAL = params.EnvironmentTarget.toLowerCase();
-        ENVIRONMEN_TARGET = params.EnvironmentTarget;
+        ENVIRONMEN_TARGET = "${params.EnvironmentTarget}";
         WORKSPACE = "${env.WORKSPACE}";
         BUILD_ID = "${env.BUILD_ID}";
 
@@ -199,13 +199,5 @@ pipeline {
                 teamDomain: "$TEAM_DOMAIN",
                 tokenCredentialId: 'slack-token'
         }
-        unsuccessful {
-            slackSend botUser: true,
-                channel: "$CHANNEL_SLACK",
-                message: "CICD bị lỗi",
-                teamDomain: "$TEAM_DOMAIN",
-                tokenCredentialId: 'slack-token'
-        }
-        
     }
 }
