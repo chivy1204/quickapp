@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
         NORMAL = params.EnvironmentTarget.toLowerCase();
-        ENVIRONMEN_TARGET = params.EnvironmentTarget
+        ENVIRONMEN_TARGET = $EnvironmentTarget;
         WORKSPACE = "${env.WORKSPACE}";
         BUILD_ID = "${env.BUILD_ID}";
 
