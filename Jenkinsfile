@@ -148,6 +148,7 @@ pipeline {
                             sudo rm -r /home/vync/backend/*
                             curl -O http://${NEXUS_URL}/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip
                             sudo unzip webapi-${BUILD_ID}.zip
+                            sudo systemctl restart kestrel-quickapp
                         '''
                     }
                 }
