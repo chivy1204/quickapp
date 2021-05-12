@@ -10,7 +10,7 @@ pipeline {
     }
     environment {
         NORMAL = params.EnvironmentTarget.toLowerCase();
-        ENVIRONMEN_TARGET = "Test";
+        ENVIRONMEN_TARGET = params.EnvironmentTarget;
         WORKSPACE = "${env.WORKSPACE}";
         BUILD_ID = "${env.BUILD_ID}";
 
@@ -196,6 +196,13 @@ pipeline {
             slackSend botUser: true,
                 channel: "$CHANNEL_SLACK",
                 message: "Ứng dụng trên môi trường $NORMAL ở version $BUILD_ID không ổn định. Kiểm tra thông tin test report tại http://allurereportquickapp.eastus.cloudapp.azure.com",
+                teamDomain: "$TEAM_DOMAIN",
+                tokenCredentialId: 'slack-token'
+        }
+        unsuccessful {
+            slackSend botUser: true,
+                channel: "$CHANNEL_SLACK",
+                message: "CICD bị lỗi",
                 teamDomain: "$TEAM_DOMAIN",
                 tokenCredentialId: 'slack-token'
         }
