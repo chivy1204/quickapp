@@ -46,7 +46,7 @@ pipeline {
         }
         stage('Build Frontend') {
             steps {
-                sh "cd QuickApp/ClientApp && ng build --configuration=${NORMAL}"
+                sh "cd QuickApp/ClientApp && npm install && ng build --configuration=${NORMAL}"
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
                     artifactId: 'frontend', classifier: '', file: 'frontend.zip', type: 'zip'
