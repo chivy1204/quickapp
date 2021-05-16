@@ -16,7 +16,7 @@ data "template_file" "install-init" {
 }
 resource "azurerm_resource_group" "quickapp" {
     name = "quickapp-resource"
-    location = "Korea Central"
+    location = "Canada Central"
 }
 resource "azurerm_virtual_network" "quickapp" {
     name = "quickapp-network"
@@ -181,7 +181,7 @@ resource "azurerm_linux_virtual_machine" "apptest" {
             "sudo snap install dotnet-sdk --classic --channel=5.0",
             "sudo snap alias dotnet-sdk.dotnet dotnet",
             "sudo snap install --classic certbot",
-            "sudo certbot run -n --nginx --agree-tos -d vync.koreacentral.cloudapp.azure.com -m chivy1204@gmail.com --redirect",
+            "sudo certbot run -n --nginx --agree-tos -d vync.canadacentral.cloudapp.azure.com -m chivy1204@gmail.com --redirect",
             "sudo rm /etc/nginx/sites-available/default",
             "sudo chmod 777 /etc/nginx/sites-available/",
             "sudo chmod 777 /etc/systemd/system/",

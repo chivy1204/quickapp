@@ -9,8 +9,8 @@
 
 export const environment = {
     production: false,
-    baseUrl: 'https://vync.koreacentral.cloudapp.azure.com', // Change this to the address of your backend API if different from frontend address
-    tokenUrl: 'https://vync.koreacentral.cloudapp.azure.com/connect/token', // For IdentityServer/Authorization Server API. You can set to null if same as baseUrl
+    baseUrl: 'https://vync.canadacentral.cloudapp.azure.com', // Change this to the address of your backend API if different from frontend address
+    tokenUrl: 'https://vync.canadacentral.cloudapp.azure.com/connect/token', // For IdentityServer/Authorization Server API. You can set to null if same as baseUrl
     loginUrl: '/login',
     requireHttps: false
 };
