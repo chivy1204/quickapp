@@ -11,6 +11,9 @@ provider "azurerm" {
       
     }
 }
+data "template_file" "install-init" {
+    template = file("install.sh")
+}
 resource "azurerm_resource_group" "quickapp" {
     name = "quickapp-resource"
     location = "Korea Central"
@@ -35,6 +38,15 @@ resource "azurerm_public_ip" "apptest" {
     idle_timeout_in_minutes = 30
     ip_version = "IPv4"
     domain_name_label = "vync"
+}
+resource "azurerm_public_ip" "frontend" {
+    name = "frontend"
+    location = azurerm_resource_group.quickapp.location
+    resource_group_name = azurerm_resource_group.quickapp.name
+    allocation_method = "Static"
+    idle_timeout_in_minutes = 30
+    ip_version = "IPv4"
+    domain_name_label = "frontendquickapp"
 }
 resource "azurerm_network_security_group" "quickapp" {
     name = "apptest"
@@ -92,9 +104,44 @@ resource "azurerm_network_interface" "quickapp" {
         public_ip_address_id = azurerm_public_ip.apptest.id
     }
 }
+resource "azurerm_network_interface" "frontend" {
+    name = "frontend-interface"
+    location = azurerm_resource_group.quickapp.location
+    resource_group_name = azurerm_resource_group.quickapp.name
+
+    ip_configuration {
+        name = "internal"
+        subnet_id = azurerm_subnet.quickapp.id
+        private_ip_address_allocation = "Dynamic"
+        public_ip_address_id = azurerm_public_ip.apptest.id
+    }
+}
 resource "azurerm_network_interface_security_group_association" "quickapp" {
     network_interface_id = azurerm_network_interface.quickapp.id
     network_security_group_id = azurerm_network_security_group.quickapp.id
+}
+resource "azurerm_linux_virtual_machine" "frontend" {
+    name = "frontend"
+    resource_group_name = azurerm_resource_group.quickapp.name
+    location = azurerm_resource_group.quickapp.location
+    size = "Standard_B1ls"
+    admin_username = "vync"
+    network_interface_ids = [ azurerm_network_interface.frontend.id ]
+    admin_ssh_key {
+        username = "vync"
+        public_key = file("~/.ssh/id_rsa.pub")
+    }
+    os_disk {
+        caching = "ReadWrite"
+        storage_account_type = "Premium_LRS"
+    }
+    source_image_reference {
+        publisher = "Canonical"
+        offer = "UbuntuServer"
+        sku = "18.04-LTS"
+        version = "latest"
+    }
+    custom_data = base64encode(data.template_file.install-init.rendered)
 }
 resource "azurerm_linux_virtual_machine" "apptest" {
     name = "apptest"
@@ -176,6 +223,16 @@ data "azurerm_public_ip" "ip" {
       azurerm_linux_virtual_machine.apptest
     ]
 }
+data "azurerm_public_ip" "frontend" {
+    name = azurerm_public_ip.frontend.name
+    resource_group_name = azurerm_linux_virtual_machine.frontend.resource_group_name
+    depends_on = [
+      azurerm_linux_virtual_machine.frontend
+    ]
+}
 output "host" {
     value = data.azurerm_public_ip.ip.ip_address
+}
+output "frontend" {
+    value = data.azurerm_public_ip.frontend.ip_address
 }

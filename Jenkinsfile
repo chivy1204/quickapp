@@ -112,7 +112,7 @@ pipeline {
             steps {
                 sh '''
                     terraform init
-                    terraform destroy -auto-approve
+                    terraform apply -auto-approve
                 '''
             }
         }
@@ -129,6 +129,16 @@ pipeline {
                         sudo unzip webapi-${BUILD_ID}.zip && \
                         sudo systemctl enable quickapp.service && \
                         sudo systemctl start quickapp.service"
+                    '''
+                }
+                sshagent(credentials : ['terraform-agent']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no -l vync $(terraform output --raw frontend) \
+                        "cd /var/www/html &&\
+                        sudo rm -r /var/www/html/* &&\
+                        sudo curl -O http://${NEXUS_URL}/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip &&\
+                        sudo unzip frontend-${BUILD_ID}.zip &&\
+                        sudo rm frontend-${BUILD_ID}.zip"
                     '''
                 }
             }
