@@ -113,7 +113,7 @@ resource "azurerm_network_interface" "frontend" {
         name = "internal"
         subnet_id = azurerm_subnet.quickapp.id
         private_ip_address_allocation = "Dynamic"
-        public_ip_address_id = azurerm_public_ip.apptest.id
+        public_ip_address_id = azurerm_public_ip.frontend.id
     }
 }
 resource "azurerm_network_interface_security_group_association" "quickapp" {
