@@ -126,7 +126,7 @@ pipeline {
                         sudo mkdir abc &&\
                         sudo rm -r /home/vync/backend/* && \
                         sudo curl -O http://${NEXUS_URL}/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip && \
-                        sudo unzip webapi-100.zip && \
+                        sudo unzip webapi-${BUILD_ID}.zip && \
                         sudo systemctl enable quickapp.service && \
                         sudo systemctl start quickapp.service"
                     '''
