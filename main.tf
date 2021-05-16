@@ -13,7 +13,7 @@ provider "azurerm" {
 }
 resource "azurerm_resource_group" "quickapp" {
     name = "quickapp-resource"
-    location = "East Asia"
+    location = "Korea Central"
 }
 resource "azurerm_virtual_network" "quickapp" {
     name = "quickapp-network"
@@ -34,13 +34,8 @@ resource "azurerm_public_ip" "apptest" {
     allocation_method = "Static"
     idle_timeout_in_minutes = 30
     ip_version = "IPv4"
-    domain_name_label = "apptestquickapp"
+    domain_name_label = "vync"
 }
-
-data "template_file" "install-init" {
-    template = file("install.sh")
-}
-
 resource "azurerm_network_security_group" "quickapp" {
     name = "apptest"
     location = azurerm_resource_group.quickapp.location
@@ -105,11 +100,13 @@ resource "azurerm_linux_virtual_machine" "apptest" {
     name = "apptest"
     resource_group_name = azurerm_resource_group.quickapp.name
     location = azurerm_resource_group.quickapp.location
-    size = "Standard_B1ls"
+    size = "Standard_B1ms"
     admin_username = "vync"
-    disable_password_authentication = false
-    admin_password = "$StrongPassword_12$"
     network_interface_ids = [ azurerm_network_interface.quickapp.id ]
+    admin_ssh_key {
+        username = "vync"
+        public_key = file("~/.ssh/id_rsa.pub")
+    }
     os_disk {
         caching = "ReadWrite"
         storage_account_type = "Premium_LRS"
@@ -120,5 +117,65 @@ resource "azurerm_linux_virtual_machine" "apptest" {
         sku = "18.04-LTS"
         version = "latest"
     }
-    custom_data = base64encode(data.template_file.install-init.rendered)
+    # custom_data = base64encode(data.template_file.cloud-init.rendered)
+    provisioner "remote-exec" {
+        connection {
+            type = "ssh"
+            user = "vync"
+            private_key = "${file("~/.ssh/id_rsa")}"
+            host = "${azurerm_public_ip.apptest.ip_address}"
+            timeout = "2m"
+        }
+        inline = [
+            "sudo apt-get update",
+            "sudo apt install nginx -y",
+            "sudo apt install unzip",
+            "sudo snap install core; sudo snap refresh core",
+            "sudo snap install dotnet-sdk --classic --channel=5.0",
+            "sudo snap alias dotnet-sdk.dotnet dotnet",
+            "sudo snap install --classic certbot",
+            "sudo certbot run -n --nginx --agree-tos -d vync.koreacentral.cloudapp.azure.com -m chivy1204@gmail.com --redirect",
+            "sudo rm /etc/nginx/sites-available/default",
+            "sudo chmod 777 /etc/nginx/sites-available/",
+            "sudo chmod 777 /etc/systemd/system/",
+            "cd /home/vync",
+            "mkdir backend",
+            "cd backend",
+            "mkdir hello",
+            "sudo dotnet dev-certs https --clean",
+            "sudo dotnet dev-certs https",
+        ]
+    }
+    provisioner "file" {
+        connection {
+            type = "ssh"
+            user = "vync"
+            private_key = "${file("~/.ssh/id_rsa")}"
+            host = "${azurerm_public_ip.apptest.ip_address}"
+            timeout = "2m"
+        }
+        source = "default"
+        destination = "/etc/nginx/sites-available/default"
+    }
+    provisioner "file" {
+        connection {
+            type = "ssh"
+            user = "vync"
+            private_key = "${file("~/.ssh/id_rsa")}"
+            host = "${azurerm_public_ip.apptest.ip_address}"
+            timeout = "2m"
+        }
+        source = "quickapp.service"
+        destination = "/etc/systemd/system/quickapp.service"
+    }
+}
+data "azurerm_public_ip" "ip" {
+    name = azurerm_public_ip.apptest.name
+    resource_group_name = azurerm_linux_virtual_machine.apptest.resource_group_name
+    depends_on = [
+      azurerm_linux_virtual_machine.apptest
+    ]
+}
+output "host" {
+    value = data.azurerm_public_ip.ip.ip_address
 }
