@@ -65,6 +65,15 @@ pipeline {
                 '''
             }
         }
+        stage("Sonar Scan") {
+            steps {
+                sh '''
+                    dotnet sonarscanner begin /k:"ScanAPI" /d:sonar.host.url="https://34.66.191.23"  /d:sonar.login="f31193a30cacb3ea3887692fe2c9a5b7537b7a53"
+                    dotnet build
+                    dotnet sonarscanner end /d:sonar.login="f31193a30cacb3ea3887692fe2c9a5b7537b7a53"
+                '''
+            }
+        }
         stage('Unit Test') {
             steps {
                 warnError('Unstable Tests') {
@@ -102,7 +111,7 @@ pipeline {
             steps {
                 sh '''
                     terraform init
-                    terraform destroy -auto-approve
+                    terraform apply -auto-approve
                 '''
             }
         }
