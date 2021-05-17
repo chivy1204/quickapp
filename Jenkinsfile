@@ -117,32 +117,43 @@ pipeline {
                 '''
             }
         }
-        stage("Deploy WebApi") {
-            steps {
-                sshagent(credentials : ['terraform-agent']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no -l vync $(terraform output --raw host) \
-                        "sudo systemctl reload nginx && \
-                        cd /home/vync/backend && \
-                        sudo mkdir abc &&\
-                        sudo rm -r /home/vync/backend/* && \
-                        sudo curl -O http://${NEXUS_URL}/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip && \
-                        sudo unzip webapi-${BUILD_ID}.zip && \
-                        sudo systemctl enable quickapp.service && \
-                        sudo systemctl start quickapp.service"
-                    '''
+        stage("Deploy Parallel") {
+            parallel {
+                stage ("Deploy WebApi") {
+                    steps {
+                        sshagent(credentials : ['terraform-agent']) {
+                            sh '''
+                                ssh -o StrictHostKeyChecking=no -l vync $(terraform output --raw host) \
+                                "sudo systemctl reload nginx && \
+                                cd /home/vync/backend && \
+                                sudo mkdir abc &&\
+                                sudo rm -r /home/vync/backend/* && \
+                                sudo curl -O http://${NEXUS_URL}/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip && \
+                                sudo unzip webapi-${BUILD_ID}.zip && \
+                                sudo systemctl enable quickapp.service && \
+                                sudo systemctl start quickapp.service"
+                            '''
+                        }
+                    }
                 }
-                sshagent(credentials : ['terraform-agent']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no -l vync $(terraform output --raw frontend) \
-                        "cd /var/www/html &&\
-                        sudo rm -r /var/www/html/* &&\
-                        sudo curl -O http://${NEXUS_URL}/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip &&\
-                        sudo unzip frontend-${BUILD_ID}.zip &&\
-                        sudo rm frontend-${BUILD_ID}.zip"
-                    '''
+                stage ("Deploy Frontend") {
+                    steps {
+                        sshagent(credentials : ['terraform-agent']) {
+                            sh '''
+                                ssh -o StrictHostKeyChecking=no -l vync $(terraform output --raw frontend) \
+                                "cd /var/www/html &&\
+                                sudo rm -r /var/www/html/* &&\
+                                sudo curl -O http://${NEXUS_URL}/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip &&\
+                                sudo unzip frontend-${BUILD_ID}.zip &&\
+                                sudo rm frontend-${BUILD_ID}.zip"
+                            '''
+                        }
+                    }
+
                 }
             }
+            
+                
         }
         // stage('Parallel Deploy') {
         //     environment {
