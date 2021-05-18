@@ -108,15 +108,15 @@ pipeline {
                 '''
             }
         }
-        stage("Create Infra") {
-            steps {
-                sh '''
-                    terraform init
-                    terraform destroy -auto-approve
-                    terraform apply -auto-approve
-                '''
-            }
-        }
+        // stage("Create Infra") {
+        //     steps {
+        //         sh '''
+        //             terraform init
+        //             terraform destroy -auto-approve
+        //             terraform apply -auto-approve
+        //         '''
+        //     }
+        // }
         stage("Deploy Parallel") {
             parallel {
                 stage ("Deploy WebApi") {
