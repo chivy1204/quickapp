@@ -17,7 +17,6 @@ pipeline {
         NEXUS_URL = "34.72.187.15:8081"
         CHANNEL_SLACK = "U021GTUANLT"
         TEAM_DOMAIN = "https://devops-aow1052.slack.com"
-        DNS_NAME = "${$(cat /tmp/quickappdns)}"
     }
     stages {
         stage('Build WebApi') {
@@ -47,7 +46,7 @@ pipeline {
         }
         stage('Build WebApp') {
             steps {
-                sh "cd QuickApp/ClientApp/src/environments && sed -i 's/example.com.vn/$DNS_NAME/g' $ENVIRONMEN_FILE"
+                sh "cd QuickApp/ClientApp/src/environments && sed -i 's/example.com.vn/${echo $(cat /tmp/quickappdns)}/g' $ENVIRONMEN_FILE"
                 sh "cd QuickApp/ClientApp && npm install && ng build --configuration=${NORMAL}"
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
