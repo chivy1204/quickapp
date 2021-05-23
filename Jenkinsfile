@@ -123,7 +123,7 @@ pipeline {
                         sudo rm -r /var/www/html/* &&\
                         sudo curl -O http://${NEXUS_URL}/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip &&\
                         sudo unzip frontend-${BUILD_ID}.zip &&\
-                        sudo rm frontend-${BUILD_ID}.zip" &&\
+                        sudo rm frontend-${BUILD_ID}.zip &&\
                         sudo systemctl restart quickapp.service"
                     '''
                 }
