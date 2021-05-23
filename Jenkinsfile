@@ -46,7 +46,10 @@ pipeline {
         }
         stage('Build WebApp') {
             steps {
-                sh "cd QuickApp/ClientApp/src/environments && sed -i 's/example.com.vn/${echo $(cat /tmp/quickappdns)}/g' $ENVIRONMEN_FILE"
+                sh '''
+                    cd QuickApp/ClientApp/src/environments
+                    sed -i '' "s/example.com.vn/$(cat /tmp/quickappdns)/g" $ENVIRONMEN_FILE
+                '''
                 sh "cd QuickApp/ClientApp && npm install && ng build --configuration=${NORMAL}"
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
                 nexusArtifactUploader artifacts: [[
