@@ -48,7 +48,7 @@ pipeline {
             steps {
                 sh '''
                     cd QuickApp/ClientApp/src/environments
-                    sed -i '' "s/example.com.vn/$(cat /tmp/quickappdns)/g" $ENVIRONMENT_FILE
+                    sed -i '' "s/example.com.vn/$(cat /tmp/${NORMAL}dns)/g" $ENVIRONMENT_FILE
                 '''
                 sh "cd QuickApp/ClientApp && npm install && ng build --configuration=${NORMAL}"
                 zip dir: "QuickApp/ClientApp/dist", exclude: '', glob: '', zipFile: "frontend.zip"
@@ -116,7 +116,7 @@ pipeline {
             steps {
                 sshagent(credentials : ['terraform-agent']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no -l packer $(cat /tmp/quickappip) \
+                        ssh -o StrictHostKeyChecking=no -l packer $(cat /tmp/${NORMAL}ip) \
                         "sudo systemctl reload nginx && \
                         cd /home/packer/backend && \
                         sudo mkdir abc &&\
