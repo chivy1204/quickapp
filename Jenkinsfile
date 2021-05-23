@@ -123,6 +123,9 @@ pipeline {
                         sudo rm -r /home/packer/backend/* && \
                         sudo curl -O http://${NEXUS_URL}/repository/allure-official/webapi/webapi/${BUILD_ID}/webapi-${BUILD_ID}.zip && \
                         sudo unzip webapi-${BUILD_ID}.zip && \
+                        sudo mv appsettings.* /tmp/ && \
+                        sudo mv /tmp/appsettings.${ENVIRONMENT_TARGET}.json /home/packer/backend/ && \
+                        sudo rm /tmp/appsettings.* && \
                         cd /var/www/html &&\
                         sudo rm -r /var/www/html/* &&\
                         sudo curl -O http://${NEXUS_URL}/repository/allure-official/frontend/frontend/${BUILD_ID}/frontend-${BUILD_ID}.zip &&\
