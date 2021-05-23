@@ -125,6 +125,7 @@ pipeline {
                         sudo unzip webapi-${BUILD_ID}.zip && \
                         sudo mv appsettings.* /tmp/ && \
                         sudo mv /tmp/appsettings.${ENVIRONMENT_TARGET}.json /home/packer/backend/ && \
+                        sudo mv /tmp/appsettings.json /home/packer/backend/ && \
                         sudo rm /tmp/appsettings.* && \
                         cd /var/www/html &&\
                         sudo rm -r /var/www/html/* &&\
